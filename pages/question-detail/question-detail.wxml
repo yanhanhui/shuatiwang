@@ -1,0 +1,106 @@
+<!--question-detail.wxml-->
+<view class="container">
+  <!-- 题目头部信息 -->
+  <view class="question-header">
+    <view class="question-title">{{questionData.title}}</view>
+    <view class="question-meta">
+      <text class="difficulty difficulty-{{questionData.difficulty}}">{{questionData.difficultyText}}</text>
+      <view class="question-actions">
+        <view class="action-btn {{questionData.isCollected ? 'collected' : ''}}" bindtap="onToggleCollect">
+          <text class="action-icon">{{questionData.isCollected ? '⭐' : '☆'}}</text>
+          <text class="action-text">收藏</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 题目内容 -->
+  <scroll-view class="question-content" scroll-y enhanced="true">
+    <!-- 题目描述 -->
+    <view class="content-section">
+      <view class="section-title">题目描述</view>
+      <rich-text class="question-description" nodes="{{questionData.description}}"></rich-text>
+    </view>
+
+    <!-- 示例 -->
+    <view class="content-section" wx:if="{{questionData.examples && questionData.examples.length > 0}}">
+      <view class="section-title">示例</view>
+      <view class="example-item" wx:for="{{questionData.examples}}" wx:key="index">
+        <view class="example-title">示例 {{index + 1}}：</view>
+        <view class="example-content">
+          <view class="example-input">
+            <text class="label">输入：</text>
+            <text class="value">{{item.input}}</text>
+          </view>
+          <view class="example-output">
+            <text class="label">输出：</text>
+            <text class="value">{{item.output}}</text>
+          </view>
+          <view class="example-explanation" wx:if="{{item.explanation}}">
+            <text class="label">解释：</text>
+            <text class="value">{{item.explanation}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提示 -->
+    <view class="content-section" wx:if="{{questionData.hints && questionData.hints.length > 0}}">
+      <view class="section-title">提示</view>
+      <view class="hints-list">
+        <view class="hint-item" wx:for="{{questionData.hints}}" wx:key="index">
+          <text class="hint-text">{{index + 1}}. {{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 约束条件 -->
+    <view class="content-section" wx:if="{{questionData.constraints && questionData.constraints.length > 0}}">
+      <view class="section-title">约束条件</view>
+      <view class="constraints-list">
+        <view class="constraint-item" wx:for="{{questionData.constraints}}" wx:key="index">
+          <text class="constraint-text">• {{item}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部操作按钮 -->
+  <view class="question-footer">
+    <view class="footer-btn secondary" bindtap="onShowSolution">
+      <text class="btn-icon">💡</text>
+      <text class="btn-text">查看解答</text>
+    </view>
+    <view class="footer-btn primary" bindtap="onStartAnswer">
+      <text class="btn-icon">✏️</text>
+      <text class="btn-text">开始答题</text>
+    </view>
+  </view>
+</view>
+
+<!-- 解答弹窗 -->
+<view class="solution-modal {{showSolution ? 'show' : ''}}" wx:if="{{showSolution}}">
+  <view class="modal-overlay" bindtap="onCloseSolution"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">参考解答</text>
+      <view class="modal-close" bindtap="onCloseSolution">×</view>
+    </view>
+    <scroll-view class="modal-body" scroll-y>
+      <view class="solution-section">
+        <view class="solution-title">解题思路</view>
+        <rich-text class="solution-text" nodes="{{questionData.solution.approach}}"></rich-text>
+      </view>
+      <view class="solution-section" wx:if="{{questionData.solution.code}}">
+        <view class="solution-title">代码实现</view>
+        <view class="code-block">
+          <text class="code-text">{{questionData.solution.code}}</text>
+        </view>
+      </view>
+      <view class="solution-section" wx:if="{{questionData.solution.complexity}}">
+        <view class="solution-title">复杂度分析</view>
+        <rich-text class="solution-text" nodes="{{questionData.solution.complexity}}"></rich-text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

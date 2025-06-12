@@ -1,0 +1,40 @@
+<!--question-bank.wxml-->
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-container">
+    <view class="search-box">
+      <input class="search-input" placeholder="搜索题目..." value="{{searchText}}" bindinput="onSearchInput" />
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-icon">🔍</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 题库列表 -->
+  <scroll-view class="question-list" scroll-y enhanced="true">
+    <view class="question-categories">
+      <view class="category-title">题库分类</view>
+      <view class="category-grid">
+        <view class="category-item" wx:for="{{categories}}" wx:key="id" bindtap="onCategoryTap" data-category="{{item}}">
+          <view class="category-icon">{{item.icon}}</view>
+          <text class="category-name">{{item.name}}</text>
+          <text class="category-count">{{item.count}}题</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="recent-questions" wx:if="{{recentQuestions.length > 0}}">
+      <view class="section-title">最近练习</view>
+      <view class="question-item" wx:for="{{recentQuestions}}" wx:key="id" bindtap="onQuestionTap" data-question="{{item}}">
+        <view class="question-content">
+          <text class="question-title">{{item.title}}</text>
+          <text class="question-difficulty difficulty-{{item.difficulty}}">{{item.difficultyText}}</text>
+        </view>
+        <view class="question-status">
+          <text class="status-text" wx:if="{{item.isCollected}}">⭐</text>
+          <text class="status-text" wx:if="{{item.isCompleted}}">✓</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

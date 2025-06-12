@@ -1,0 +1,112 @@
+<!--history.wxml-->
+<view class="container">
+  <!-- 头部统计 -->
+  <view class="header-stats">
+    <view class="stats-row">
+      <view class="stats-card">
+        <view class="stats-number">{{totalCount}}</view>
+        <view class="stats-label">总计</view>
+      </view>
+      <view class="stats-card">
+        <view class="stats-number correct">{{correctCount}}</view>
+        <view class="stats-label">正确</view>
+      </view>
+      <view class="stats-card">
+        <view class="stats-number incorrect">{{incorrectCount}}</view>
+        <view class="stats-label">错误</view>
+      </view>
+      <view class="stats-card">
+        <view class="stats-number">{{accuracyRate}}%</view>
+        <view class="stats-label">正确率</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选选项 -->
+  <view class="filter-bar">
+    <view class="filter-section">
+      <text class="filter-title">筛选：</text>
+      <view class="filter-options">
+        <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="all">全部</view>
+        <view class="filter-item {{currentFilter === 'correct' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="correct">正确</view>
+        <view class="filter-item {{currentFilter === 'incorrect' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="incorrect">错误</view>
+      </view>
+    </view>
+    
+    <view class="clear-section">
+      <view class="clear-btn" bindtap="onClearHistory">
+        <text class="clear-text">清空</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <scroll-view class="history-list" scroll-y enhanced="true" refresher-enabled="true" bindrefresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+    <view class="list-content">
+      <!-- 按日期分组 -->
+      <view class="date-group" wx:for="{{groupedHistory}}" wx:key="date">
+        <view class="date-header">
+          <text class="date-text">{{item.date}}</text>
+          <text class="date-count">{{item.records.length}}题</text>
+        </view>
+        
+        <view class="history-item" wx:for="{{item.records}}" wx:key="id" wx:for-item="record" bindtap="onQuestionTap" data-question="{{record}}">
+          <view class="item-left">
+            <view class="result-indicator {{record.isCorrect ? 'correct' : 'incorrect'}}">
+              <text class="result-icon">{{record.isCorrect ? '✓' : '✗'}}</text>
+            </view>
+          </view>
+          
+          <view class="item-content">
+            <view class="question-title">{{record.title}}</view>
+            <view class="question-meta">
+              <text class="difficulty difficulty-{{record.difficulty}}">{{record.difficultyText}}</text>
+              <text class="answer-time">{{record.answerTime}}</text>
+            </view>
+          </view>
+          
+          <view class="item-right">
+            <view class="action-menu" bindtap="onShowActionMenu" data-record="{{record}}" catch:tap="true">
+              <text class="menu-icon">⋯</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{filteredHistory.length === 0 && !refreshing}}">
+        <text class="empty-icon">📝</text>
+        <text class="empty-text">{{history.length === 0 ? '还没有答题记录' : '没有符合条件的记录'}}</text>
+        <text class="empty-desc">{{history.length === 0 ? '快去刷题吧' : '尝试调整筛选条件'}}</text>
+        <view class="empty-action" wx:if="{{history.length === 0}}" bindtap="goToQuestionBank">
+          <text class="action-text">开始刷题</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 操作菜单弹窗 -->
+<view class="action-modal {{showActionModal ? 'show' : ''}}" wx:if="{{showActionModal}}">
+  <view class="modal-overlay" bindtap="onCloseActionModal"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">{{selectedRecord.title}}</text>
+      <view class="modal-close" bindtap="onCloseActionModal">×</view>
+    </view>
+    <view class="modal-actions">
+      <view class="action-item" bindtap="onViewQuestion">
+        <text class="action-icon">👀</text>
+        <text class="action-name">查看题目</text>
+      </view>
+      <view class="action-item" bindtap="onToggleCollect">
+        <text class="action-icon">{{selectedRecord.isCollected ? '⭐' : '☆'}}</text>
+        <text class="action-name">{{selectedRecord.isCollected ? '取消收藏' : '收藏题目'}}</text>
+      </view>
+      <view class="action-item delete" bindtap="onDeleteRecord">
+        <text class="action-icon">🗑️</text>
+        <text class="action-name">删除记录</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,82 @@
+<!--question-list.wxml-->
+<view class="container">
+  <!-- 分类信息头部 -->
+  <view class="category-header">
+    <view class="category-info">
+      <text class="category-icon">{{categoryData.icon}}</text>
+      <view class="category-details">
+        <text class="category-name">{{categoryData.name}}</text>
+        <text class="category-description">共 {{questionList.length}} 道题目</text>
+      </view>
+    </view>
+    
+    <!-- 筛选选项 -->
+    <view class="filter-options">
+      <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="all">
+        <text>全部</text>
+      </view>
+      <view class="filter-item {{currentFilter === 'easy' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="easy">
+        <text>简单</text>
+      </view>
+      <view class="filter-item {{currentFilter === 'medium' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="medium">
+        <text>中等</text>
+      </view>
+      <view class="filter-item {{currentFilter === 'hard' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="hard">
+        <text>困难</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 题目列表 -->
+  <scroll-view class="question-list" scroll-y enhanced="true" refresher-enabled="{{true}}" bindrefresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+    <view class="list-content">
+      <view class="question-item" wx:for="{{filteredQuestions}}" wx:key="id" bindtap="onQuestionTap" data-question="{{item}}">
+        <view class="question-number">{{item.number}}</view>
+        <view class="question-content">
+          <view class="question-title">{{item.title}}</view>
+          <view class="question-meta">
+            <text class="difficulty difficulty-{{item.difficulty}}">{{item.difficultyText}}</text>
+            <view class="question-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+              <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="question-status">
+          <view class="status-icons">
+            <text class="status-icon collected" wx:if="{{item.isCollected}}">⭐</text>
+            <text class="status-icon completed" wx:if="{{item.isCompleted}}">✓</text>
+          </view>
+          <text class="acceptance-rate">{{item.acceptanceRate}}%</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{filteredQuestions.length === 0}}">
+        <text class="empty-icon">📝</text>
+        <text class="empty-text">暂无题目</text>
+        <text class="empty-desc">请尝试切换其他筛选条件</text>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="load-more" wx:if="{{hasMore && filteredQuestions.length > 0}}">
+        <text class="load-text">{{loading ? '加载中...' : '加载更多'}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 统计信息 -->
+  <view class="stats-footer">
+    <view class="stat-item">
+      <text class="stat-number">{{completedCount}}</text>
+      <text class="stat-label">已完成</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{collectedCount}}</text>
+      <text class="stat-label">已收藏</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{accuracyRate}}%</text>
+      <text class="stat-label">正确率</text>
+    </view>
+  </view>
+</view>

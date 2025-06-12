@@ -1,0 +1,65 @@
+<!--collection.wxml-->
+<view class="container">
+  <!-- 头部统计 -->
+  <view class="header-stats">
+    <view class="stats-card">
+      <view class="stats-number">{{collections.length}}</view>
+      <view class="stats-label">已收藏题目</view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-card">
+      <view class="stats-number">{{completedCount}}</view>
+      <view class="stats-label">已完成</view>
+    </view>
+  </view>
+
+  <!-- 筛选和排序 -->
+  <view class="filter-bar">
+    <view class="filter-section">
+      <text class="filter-title">难度：</text>
+      <view class="filter-options">
+        <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="all">全部</view>
+        <view class="filter-item {{currentFilter === 'easy' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="easy">简单</view>
+        <view class="filter-item {{currentFilter === 'medium' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="medium">中等</view>
+        <view class="filter-item {{currentFilter === 'hard' ? 'active' : ''}}" bindtap="onFilterChange" data-filter="hard">困难</view>
+      </view>
+    </view>
+    
+    <view class="sort-section">
+      <view class="sort-btn" bindtap="onSortChange">
+        <text class="sort-text">{{sortText}}</text>
+        <text class="sort-icon">⇅</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收藏列表 -->
+  <scroll-view class="collection-list" scroll-y enhanced="true" refresher-enabled="true" bindrefresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+    <view class="list-content">
+      <view class="collection-item" wx:for="{{filteredCollections}}" wx:key="id" bindtap="onQuestionTap" data-question="{{item}}">
+        <view class="item-content">
+          <view class="question-title">{{item.title}}</view>
+          <view class="question-meta">
+            <text class="difficulty difficulty-{{item.difficulty}}">{{item.difficultyText}}</text>
+            <text class="collect-time">{{item.collectedTime}}</text>
+          </view>
+        </view>
+        <view class="item-actions">
+          <view class="action-btn" bindtap="onRemoveCollection" data-id="{{item.id}}" catch:tap="true">
+            <text class="action-icon">🗑️</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{filteredCollections.length === 0 && !refreshing}}">
+        <text class="empty-icon">⭐</text>
+        <text class="empty-text">{{collections.length === 0 ? '还没有收藏的题目' : '没有符合条件的题目'}}</text>
+        <text class="empty-desc">{{collections.length === 0 ? '快去收藏一些喜欢的题目吧' : '尝试调整筛选条件'}}</text>
+        <view class="empty-action" wx:if="{{collections.length === 0}}" bindtap="goToQuestionBank">
+          <text class="action-text">去题库逛逛</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
